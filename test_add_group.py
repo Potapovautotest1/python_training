@@ -9,46 +9,48 @@ import unittest, time, re
 
 class TestAddGroup(unittest.TestCase):
     def setUp(self):
-        self.dv = webdriver.Firefox()
-        self.dv.implicitly_wait(30)
+        self.wd = webdriver.Firefox()
+        self.wd.implicitly_wait(30)
 
     
     def test_add_group(self):
-        dv = self.dv
-        dv.get("http://localhost/addressbook/")
-        dv.find_element_by_name("user").click()
-        dv.find_element_by_name("user").clear()
-        dv.find_element_by_name("user").send_keys("admin")
-        dv.find_element_by_name("pass").clear()
-        dv.find_element_by_name("pass").send_keys("secret")
-        dv.find_element_by_id("LoginForm").submit()
-        dv.find_element_by_link_text("groups").click()
-        dv.find_element_by_name("new").click()
-        dv.find_element_by_name("group_name").click()
-        dv.find_element_by_name("group_name").clear()
-        dv.find_element_by_name("group_name").send_keys("dfgkfgjk")
-        dv.find_element_by_name("group_header").clear()
-        dv.find_element_by_name("group_header").send_keys("fdkjgdl")
-        dv.find_element_by_name("group_footer").clear()
-        dv.find_element_by_name("group_footer").send_keys("fdgjldgj")
-        dv.find_element_by_name("submit").click()
-        dv.find_element_by_link_text("group page").click()
-        dv.find_element_by_link_text("Logout").click()
+        wd = self.wd
+        wd.get("http://localhost/addressbook/")
+        wd.find_element_by_name("user").click()
+        wd.find_element_by_name("user").clear()
+        wd.find_element_by_name("user").send_keys("admin")
+        wd.find_element_by_name("pass").clear()
+        wd.find_element_by_name("pass").send_keys("secret")
+        wd.find_element_by_id("LoginForm").submit()
+        wd.find_element_by_link_text("groups").click()
+        wd.find_element_by_name("new").click()
+        wd.find_element_by_name("group_name").click()
+        wd.find_element_by_name("group_name").clear()
+        wd.find_element_by_name("group_name").send_keys("dfgkfgjk")
+        wd.find_element_by_name("group_header").clear()
+        wd.find_element_by_name("group_header").send_keys("fdkjgdl")
+        wd.find_element_by_name("group_footer").clear()
+        wd.find_element_by_name("group_footer").send_keys("fdgjldgj")
+        wd.find_element_by_name("submit").click()
+        wd.find_element_by_link_text("group page").click()
+        wd.find_element_by_link_text("Logout").click()
+        time.sleep(5)
+
     
     def is_element_present(self, how, what):
-        try: self.dv.find_element(by=how, value=what)
+        try: self.wd.find_element(by=how, value=what)
         except NoSuchElementException as e: return False
         return True
     
     def is_alert_present(self):
-        try: self.dv.switch_to_alert()
+        try: self.wd.switch_to_alert()
         except NoAlertPresentException as e: return False
         return True
     
 
     
     def tearDown(self):
-        self.dv.quit()
+        self.wd.quit()
 
 
 if __name__ == "__main__":
