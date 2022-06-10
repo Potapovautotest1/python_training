@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
-from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import NoAlertPresentException
 import unittest, time
-from Group import group
-from Application import application
+from model.Group import group
+from fixture.Application import application
 import pytest
 
 
@@ -15,18 +12,16 @@ def app(request):
     return fixture
 
 def test_add_group(app):
-    app.login(username="admin", password="secret")
+    app.session.login(username="admin", password="secret")
     app.init_create_new_group(group(name_group="dfgkfgjk", header="fdkjgdl", footer="fdgjldgj"))
-    app.logout()
+    app.session.logout()
     time.sleep(3)
 
 def test_add_empty_group(app):
-    app.login(username="admin", password="secret")
+    app.session.login(username="admin", password="secret")
     app.init_create_new_group(group(name_group="", header="", footer=""))
-    app.logout()
+    app.session.logout()
     time.sleep(3)
-
-
 
 if __name__ == "__main__":
     unittest.main()

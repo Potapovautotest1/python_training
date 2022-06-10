@@ -3,8 +3,8 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
-import unittest, time
-from contact import contact
+import unittest
+from model.contact import contact
 
 class UntitledTestCase(unittest.TestCase):
     def setUp(self):
