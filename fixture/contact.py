@@ -70,9 +70,17 @@ class ContactHelper:
     def delete_first_contact(self):
         wd = self.app.wd
         self.open_contact_page()
-        wd.find_element_by_name("selected[]").click()
+        self.select_first_contact(wd)
         wd.find_element_by_xpath("//input[@value='Delete']").click()
         wd.switch_to.alert.accept()
+
+    def select_first_contact(self, wd):
+        wd.find_element_by_name("selected[]").click()
+
+    def count_contact(self):
+        wd = self.app.wd
+        self.open_contact_page()
+        return len(wd.find_elements_by_name("selected[]"))
 
 
 
