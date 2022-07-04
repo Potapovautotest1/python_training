@@ -12,6 +12,7 @@ def test_delete_first_contact(app):
     app.contact.open_contact_page()
     old_list = app.contact.get_list_contact()
     app.contact.delete_first_contact()
+    time.sleep(5)
     app.contact.open_contact_page()
     new_list = app.contact.get_list_contact()
     assert len(old_list) == len(new_list)

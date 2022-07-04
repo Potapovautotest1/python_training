@@ -8,7 +8,7 @@ def test_add_group(app):
     gr = group(name="dfgkfgjk", header="fdkjgdl", footer="fdgjldgj")
     app.group.create(gr)
     new_list_group = app.group.get_list_group()
-    assert len(old_list_group)+1 == len(new_list_group)
+    assert len(old_list_group)+1 == app.group.count()
     old_list_group.append(gr)
     assert sorted(old_list_group, key=group.id_or_max)== sorted(new_list_group, key=group.id_or_max)
     time.sleep(3)

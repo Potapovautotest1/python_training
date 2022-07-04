@@ -11,6 +11,7 @@ class ContactHelper:
         wd.find_element_by_link_text("add new").click()
         self.fill_contact_form(contact)
         wd.find_element_by_name("submit").click()
+        self.contact_cache = None
 
     def fill_contact_form(self, contact):
         wd = self.app.wd
@@ -76,9 +77,10 @@ class ContactHelper:
     def delete_first_contact(self):
         wd = self.app.wd
         self.open_contact_page()
-        self.select_first_contact(wd)
+        self.select_first_contact()
         wd.find_element_by_xpath("//input[@value='Delete']").click()
         wd.switch_to.alert.accept()
+        self.contact_cache = None
 
     def select_first_contact(self):
         wd = self.app.wd
@@ -89,16 +91,18 @@ class ContactHelper:
         self.open_contact_page()
         return len(wd.find_elements_by_name("selected[]"))
 
+    contact_cache = None
 
     def get_list_contact(self):
-        wd = self.app.wd
-        contacts = []
-        for element in wd.find_elements_by_css_selector("tr[name=entry]"):
-            lastname_text = element.find_element_by_css_selector("tr[name=entry] td:nth-child(2)").text
-            firstname_text = element.find_element_by_css_selector("tr[name=entry] td:nth-child(3)").text
-            id = element.find_element_by_name("selected[]").get_attribute("value")
-            contacts.append(contact(firstname=firstname_text, lastname=lastname_text, id=id))
-        return contacts
+        if self.contact_cache is None:
+            wd = self.app.wd
+            self.contact_cache = []
+            for element in wd.find_elements_by_css_selector("tr[name=entry]"):
+                lastname_text = element.find_element_by_css_selector("tr[name=entry] td:nth-child(2)").text
+                firstname_text = element.find_element_by_css_selector("tr[name=entry] td:nth-child(3)").text
+                id = element.find_element_by_name("selected[]").get_attribute("value")
+                self.contact_cache.append(contact(firstname=firstname_text, lastname=lastname_text, id=id))
+        return list(self.contact_cache)
 
     def edit(self, new_contact_data):
         wd = self.app.wd
@@ -108,6 +112,7 @@ class ContactHelper:
         self.fill_edit_contact_form(new_contact_data)
         wd.find_element_by_css_selector("[value=Update]").click()
         self.open_contact_page()
+        self.contact_cache = None
 
     def type(self, field_name, text):
         wd = self.app.wd
