@@ -1,7 +1,8 @@
 import time
 from model.contact import contact
+from random import randrange
 
-def test_delete_first_contact(app):
+def test_delete_contact_by_index(app):
     cntct = contact(firstname="Ivan", middlename="Ivanovich", lastname="Ivaniv", nickname="Vanz",
                     title="GRS", company="GRS", address="Linina 12", home_phonenumber="7894568548",
                     mobile_phonenumber="4854689797", work="GRS",
@@ -11,7 +12,8 @@ def test_delete_first_contact(app):
         app.contact.init_add_contact(cntct)
     app.contact.open_contact_page()
     old_list = app.contact.get_list_contact()
-    app.contact.delete_first_contact()
+    index = randrange(len(old_list))
+    app.contact.delete_contact_by_index(index)
     time.sleep(5)
     app.contact.open_contact_page()
     new_list = app.contact.get_list_contact()
