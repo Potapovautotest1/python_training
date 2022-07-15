@@ -1,3 +1,4 @@
+import re
 import time
 from model.contact import contact
 
@@ -104,11 +105,15 @@ class ContactHelper:
         if self.contact_cache is None:
             wd = self.app.wd
             self.contact_cache = []
-            for element in wd.find_elements_by_css_selector("tr[name=entry]"):
-                lastname_text = element.find_element_by_css_selector("tr[name=entry] td:nth-child(2)").text
-                firstname_text = element.find_element_by_css_selector("tr[name=entry] td:nth-child(3)").text
-                id = element.find_element_by_name("selected[]").get_attribute("value")
-                self.contact_cache.append(contact(firstname=firstname_text, lastname=lastname_text, id=id))
+            for row in wd.find_elements_by_name("entry"):
+                cells = row.find_elements_by_tag_name("td")
+                firstname_text = cells[2].text
+                lastname_text = cells[1].text
+                id = cells[0].find_element_by_tag_name("input").get_attribute("value")
+                all_phones = cells[5].text.splitlines()
+                self.contact_cache.append(contact(firstname=firstname_text, lastname=lastname_text, id=id,
+                                                  homephone=all_phones[0], mobilephone=all_phones[1],
+                                                  workphone=all_phones[2], faxphone=all_phones[3]))
         return list(self.contact_cache)
 
     def edit_by_index(self, index, new_contact_data):
@@ -120,6 +125,20 @@ class ContactHelper:
         wd.find_element_by_css_selector("[value=Update]").click()
         self.open_contact_page()
         self.contact_cache = None
+
+    def open_contact_edit_by_index(self, index):
+        wd = self.app.wd
+        self.open_contact_page()
+        row = wd.find_elements_by_name("entry")[index]
+        cell = row.find_elements_by_tag_name("td")[7]
+        cell.find_element_by_tag_name("a").click()
+
+    def open_contact_view_by_index(self, index):
+        wd = self.app.wd
+        self.open_contact_page()
+        row = wd.find_elements_by_name("entry")[index]
+        cell = row.find_elements_by_tag_name("td")[6]
+        cell.find_element_by_tag_name("a").click()
 
     def type(self, field_name, text):
         wd = self.app.wd
@@ -136,4 +155,35 @@ class ContactHelper:
         self.type("nickname", contact.nickname)
         self.type("title", contact.title)
 
+    def get_info_contact_from_editpage(self, index):
+        wd = self.app.wd
+        self.open_contact_edit_by_index(index)
+        firstname = wd.find_element_by_name("firstname").get_attribute("value")
+        lastname = wd.find_element_by_name("lastname").get_attribute("value")
+        id = wd.find_element_by_name("id").get_attribute("value")
+        homephone = wd.find_element_by_name("home").get_attribute("value")
+        mobilephone = wd.find_element_by_name("mobile").get_attribute("value")
+        workphone = wd.find_element_by_name("work").get_attribute("value")
+        faxphone = wd.find_element_by_name("phone2").get_attribute("value")
+        return contact(lastname=lastname, firstname=firstname, id=id, homephone=homephone, mobilephone=mobilephone,
+                       workphone=workphone, faxphone=faxphone)
 
+    def get_info_contact_from_editpage_phone(self, index):
+        wd = self.app.wd
+        self.open_contact_edit_by_index(index)
+        homephone = wd.find_element_by_name("home").get_attribute("value")
+        mobilephone = wd.find_element_by_name("mobile").get_attribute("value")
+        workphone = wd.find_element_by_name("work").get_attribute("value")
+        faxphone = wd.find_element_by_name("fax").get_attribute("value")
+        return contact(homephone=homephone, mobilephone=mobilephone,
+                       workphone=workphone, faxphone=faxphone)
+
+    def get_list_contact_from_viewpage(self, index):
+        wd = self.app.wd
+        self.open_contact_view_by_index(index)
+        text = wd.find_element_by_id("content").text
+        homephone = re.search("H: (.*)", text).group(1)
+        mobilephone = re.search("M: (.*)", text).group(1)
+        workphone = re.search("W: (.*)", text).group(1)
+        faxphone = re.search("F: (.*)", text).group(1)
+        return contact(homephone=homephone, mobilephone=mobilephone, workphone=workphone, faxphone=faxphone)
